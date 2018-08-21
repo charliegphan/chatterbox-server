@@ -1,3 +1,5 @@
+// import { start } from "repl";
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -21,11 +23,12 @@ this file and include it in basic-server.js so that it actually works.
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
+var headers = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept, X-Parse-Application-Id, X-Parse-REST-API-Key',
-  'access-control-max-age': 10 // Seconds.
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10, // Seconds.
+  'Content-Type': 'text/plain'
 };
 
 var messages = [{
@@ -33,42 +36,32 @@ var messages = [{
   text: 'Do my bidding!'
 }];
 
+var sendResponse = (statusCode, response, data) => {
+  response.writeHead(statusCode, headers);
+  data ? response.end(JSON.stringify(data)) : response.end();
+};
+
+
 var requestHandler = function(request, response) {
-
-
-  /////////////GET//////////////////////
   if (request.url === '/classes/messages') {
     if (request.method === 'GET') {
       var body = { results: messages };
-      var headers = defaultCorsHeaders;
-      headers['Content-Type'] = 'text/plain';
   
-      response.writeHead(200, headers);
-      response.end(JSON.stringify(body));
-      /////////////POST//////////////////////
+      sendResponse(200, response, body);
     } else if (request.method === 'POST') {
       var body = '';
       request.on('data', chunk => {
         body += chunk;
       });
-  
       request.on('end', () => {
         messages.unshift(JSON.parse(body));
-        var headers = defaultCorsHeaders;
-        headers['Content-Type'] = 'text/plain';
-        response.writeHead(201, headers);
-        response.end();
+        sendResponse(201, response);
       });
     } else if (request.method === 'OPTIONS') {
-      var headers = defaultCorsHeaders;
-      //TENTATIVE STATUS CODE: 200
-      response.writeHead(200, headers);
-      response.end();
+      sendResponse(200, response);
     } 
-
   } else {
-    response.writeHead(404);
-    response.end();
+    sendResponse(404, response);
   }
 
 
