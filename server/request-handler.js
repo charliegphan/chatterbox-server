@@ -45,6 +45,8 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
+
+  /////////////GET//////////////////////
   if (request.method === 'GET' && request.url === '/classes/messages') {
     var body = { results: messages };
     var headers = defaultCorsHeaders;
@@ -52,8 +54,7 @@ var requestHandler = function(request, response) {
 
     response.writeHead(200, headers);
     response.end(JSON.stringify(body));
-
-    // request.on('end', function() {});
+    /////////////POST//////////////////////
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     var body = '';
     request.on('data', data => {
