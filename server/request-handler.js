@@ -24,11 +24,14 @@ this file and include it in basic-server.js so that it actually works.
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
+  'access-control-allow-headers': 'content-type, accept, X-Parse-Application-Id, X-Parse-REST-API-Key',
   'access-control-max-age': 10 // Seconds.
 };
 
-var messages = [];
+var messages = [{
+  username: 'Charlie',
+  text: 'Do my bidding!'
+}];
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -47,27 +50,57 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
 
   /////////////GET//////////////////////
-  if (request.method === 'GET' && request.url === '/classes/messages') {
-    var body = { results: messages };
-    var headers = defaultCorsHeaders;
-    headers['Content-Type'] = 'text/plain';
-
-    response.writeHead(200, headers);
-    response.end(JSON.stringify(body));
-    /////////////POST//////////////////////
-  } else if (request.method === 'POST' && request.url === '/classes/messages') {
-    var body = '';
-    request.on('data', data => {
-      body += data;
-    });
-
-    request.on('end', () => {
-      messages.push(JSON.parse(body));
+  if (request.url === '/classes/messages') {
+    if (request.method === 'GET') {
+      var body = { results: messages };
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = 'text/plain';
-      response.writeHead(201, headers);
+  
+      response.writeHead(200, headers);
+      response.end(JSON.stringify(body));
+      /////////////POST//////////////////////
+    } else if (request.method === 'POST') {
+      var body = '';
+      request.on('data', chunk => {
+        body += chunk;
+      });
+  
+      request.on('end', () => {
+        messages.push(JSON.parse(body));
+        var headers = defaultCorsHeaders;
+        headers['Content-Type'] = 'text/plain';
+        response.writeHead(201, headers);
+        response.end();
+      });
+    } 
+  } else if (request.url === '/classes/messages?order=-createdAt') {
+    if (request.method === 'GET') {
+      var body = { results: messages };
+      var headers = defaultCorsHeaders;
+      headers['Content-Type'] = 'text/plain';
+  
+      response.writeHead(200, headers);
+      response.end(JSON.stringify(body));
+
+    } else if (request.method === 'OPTIONS') {
+      var headers = defaultCorsHeaders;
+      //TENTATIVE STATUS CODE: 200
+      response.writeHead(200, headers);
       response.end();
-    });
+    } 
+    // else if (request.method === 'POST') {
+    //   var body = '';
+    //   var headers = defaultCorsHeaders;
+    //   request.on('data', function(chunk) {
+    //     body += chunk;
+    //   });
+      
+    //   messages.push(JSON.parse(body));
+    //   request.on('end', function() {
+    //     response.writeHead(201, headers); 
+    //     response.end();     
+    //   });
+    // }
   } else {
     response.writeHead(404);
     response.end();
