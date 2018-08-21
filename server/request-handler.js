@@ -51,17 +51,16 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'text/plain';
 
     response.writeHead(200, headers);
-    response.write(JSON.stringify(body));
-    response.end();
+    response.end(JSON.stringify(body));
 
     // request.on('end', function() {});
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
     var body = '';
-    request.on('data', function(data) {
+    request.on('data', data => {
       body += data;
     });
 
-    request.on('end', function() {
+    request.on('end', () => {
       messages.push(JSON.parse(body));
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = 'text/plain';
