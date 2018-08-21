@@ -53,7 +53,7 @@ var requestHandler = function(request, response) {
       });
   
       request.on('end', () => {
-        messages.push(JSON.parse(body));
+        messages.unshift(JSON.parse(body));
         var headers = defaultCorsHeaders;
         headers['Content-Type'] = 'text/plain';
         response.writeHead(201, headers);
