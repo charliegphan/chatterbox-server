@@ -34,20 +34,7 @@ var messages = [{
 }];
 
 var requestHandler = function(request, response) {
-  // Request and Response come from node's http module.
-  //
-  // They include information about both the incoming request, such as
-  // headers and URL, and about the outgoing response, such as its status
-  // and content.
-  //
-  // Documentation for both request and response can be found in the HTTP section at
-  // http://nodejs.org/documentation/api/
 
-  // Do some basic logging.
-  //
-  // Adding more logging to your server can be an easy way to get passive
-  // debugging help, but you should always be careful about leaving stray
-  // console.logs in your code.
 
   /////////////GET//////////////////////
   if (request.url === '/classes/messages') {
@@ -72,39 +59,34 @@ var requestHandler = function(request, response) {
         response.writeHead(201, headers);
         response.end();
       });
-    } 
-  } else if (request.url === '/classes/messages?order=-createdAt') {
-    if (request.method === 'GET') {
-      var body = { results: messages };
-      var headers = defaultCorsHeaders;
-      headers['Content-Type'] = 'text/plain';
-  
-      response.writeHead(200, headers);
-      response.end(JSON.stringify(body));
-
     } else if (request.method === 'OPTIONS') {
       var headers = defaultCorsHeaders;
       //TENTATIVE STATUS CODE: 200
       response.writeHead(200, headers);
       response.end();
     } 
-    // else if (request.method === 'POST') {
-    //   var body = '';
-    //   var headers = defaultCorsHeaders;
-    //   request.on('data', function(chunk) {
-    //     body += chunk;
-    //   });
-      
-    //   messages.push(JSON.parse(body));
-    //   request.on('end', function() {
-    //     response.writeHead(201, headers); 
-    //     response.end();     
-    //   });
-    // }
+
   } else {
     response.writeHead(404);
     response.end();
   }
+
+
+
+  // Request and Response come from node's http module.
+  //
+  // They include information about both the incoming request, such as
+  // headers and URL, and about the outgoing response, such as its status
+  // and content.
+  //
+  // Documentation for both request and response can be found in the HTTP section at
+  // http://nodejs.org/documentation/api/
+
+  // Do some basic logging.
+  //
+  // Adding more logging to your server can be an easy way to get passive
+  // debugging help, but you should always be careful about leaving stray
+  // console.logs in your code.
 
   // console.log(
   //   'Serving request type ' + request.method + ' for url ' + request.url
