@@ -44,21 +44,26 @@ var sendResponse = (statusCode, response, data) => {
   data ? response.end(JSON.stringify(data)) : response.end();
 };
 
+var collectData = (request, callback) => {
+  var body = '';
+  request.on('data', chunk => {
+    body += chunk;
+  });
+
+  request.on('end', () => {
+    callback( JSON.parse(body) );
+  });
+};
+
 var actions = {
   'GET': function(request, response) {
     var body = { results: messages };
     sendResponse(200, response, body);
   },
   'POST': function (request, response) {
-    var body = '';
-    request.on('data', chunk => {
-      body += chunk;
-    });
-
-    request.on('end', () => {
-      var message = JSON.parse(body);
-      message.objectId = ++messageCount;
+    collectData(request, (message) => {
       messages.unshift(message);
+      message.objectId = ++messageCount;
       sendResponse(201, response);
     });
   },
