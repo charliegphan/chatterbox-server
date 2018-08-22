@@ -31,16 +31,18 @@ var headers = {
   'Content-Type': 'text/plain'
 };
 
+var messageCount = 1;
+
 var messages = [{
   username: 'Charlie',
-  text: 'Do my bidding!'
+  text: 'Do my bidding!',
+  objectId: messageCount,
 }];
 
 var sendResponse = (statusCode, response, data) => {
   response.writeHead(statusCode, headers);
   data ? response.end(JSON.stringify(data)) : response.end();
 };
-
 
 var requestHandler = function(request, response) {
   if (request.url === '/classes/messages') {
@@ -54,7 +56,10 @@ var requestHandler = function(request, response) {
         body += chunk;
       });
       request.on('end', () => {
-        messages.unshift(JSON.parse(body));
+        var message = JSON.parse(body);
+        message.objectId = ++messageCount;
+        messages.unshift(message);
+
         sendResponse(201, response);
       });
     } else if (request.method === 'OPTIONS') {
