@@ -146,5 +146,4 @@ describe('Node Server Request Listener Function', function() {
   });
 
   // 3
-  
 });
